@@ -10,7 +10,11 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  cv_bridge
+  image_transport
   tf
+  
+  
 )
 
 ## System dependencies are found with CMake's conventions
@@ -118,7 +122,9 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+
 )
+
 
 ## Declare a C++ library
 # add_library(sbpl_planner
@@ -189,8 +195,13 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+find_package(OpenCV REQUIRED)
+add_definitions(${PCL_DEFINITIONS})
+find_package(PCL 1.3 REQUIRED COMPONENTS common io)
 
-link_directories(include ${OpenCV_INCLUDE_DIRS})
-add_executable(sbpl_node src/sbplnode.cpp)
-target_link_libraries(sbpl_node ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
-add_dependencies(sbpl_node sbplnode.cpp )
+include_directories( include ${OpenCV_INCLUDE_DIRS} ${gps_common_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
+
+link_directories(include ${OpenCV_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${PCL_LIBRARY_DIRS})
+add_executable(sbpl_lanenav src/main.cpp src/sbpl_lanenav.cpp)
+target_link_libraries(sbpl_lanenav ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${PCL_COMMON_LIBRARIES} 
+    ${PCL_IO_LIBRARIES})
